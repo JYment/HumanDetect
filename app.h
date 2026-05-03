@@ -10,9 +10,22 @@
 #define APP_H_
 
 #include "clock.h"
+#include "power.h"
+#include "wdt.h"
+#include "timer.h"
 #include "gpio.h"
 #include "i2c.h"
 #include "uart.h"
+
+
+
+typedef enum {
+	IDLE	= 0,
+	SLEEP	= 1,
+	ACTIVE	= 2,
+	ERROR	= 3
+} app_state_t;
+
 
 
 void APP_Init(void);

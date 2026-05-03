@@ -9,20 +9,26 @@
 
 #include "def.h"
 
-// 클록 소스 선택
+
 typedef enum {
-	CLOCK_SOURCE_OSC20M,      // 20MHz 내부 RC
-	CLOCK_SOURCE_OSCULP32K,   // 32.768kHz ULP
-	CLOCK_SOURCE_EXTCLK       // 외부 클록 입력
-} ClockSource_t;
+    CLOCK_SOURCE_INTERNAL = 0,  // 내부 20MHz RC 오실레이터
+    CLOCK_SOURCE_EXTERNAL = 1   // 외부 크리스털/클럭 입력
+} clock_source_t;
 
-// 초기화 함수 (기본 20MHz)
-void CLOCK_Init(void);
+/**
+ * @brief 클럭 초기화
+ */
+void clock_init(clock_source_t source);
 
-// 클록 설정 함수 (소스 + 분주기)
-void CLOCK_Set(void);
+/**
+ * @brief 클럭 주파수 설정 (분주기)
+ */
+void clock_set_prescaler(uint8_t div);
 
-// 현재 클록 주파수 반환
-uint32_t CLOCK_GetFrequency(void);
+/**
+ * @brief 현재 클럭 소스 확인
+ */
+clock_source_t clock_get_source(void);
+
 
 #endif /* CLOCK_H_ */

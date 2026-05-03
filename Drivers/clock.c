@@ -7,29 +7,54 @@
 #include "clock.h"
 
 
-static uint32_t current_freq = 20000000UL; // 기본 20MHz
-
-
-void CLOCK_Init(void) {
-	// 기본 클록: 20MHz RC 오실레이터, 분주기 없음
-  CCP = CCP_IOREG_gc; // 보호 해제
-  CLKCTRL.MCLKCTRLA = CLKCTRL_CLKSEL_OSC20M_gc;
-
-  CCP = CCP_IOREG_gc; // 보호 해제
-  CLKCTRL.MCLKCTRLB = 0; // 분주기 비활성화
-
-	current_freq = 20000000UL;
-}
-
-void CLOCK_Set(void) 
+void clock_init(clock_source_t source)
 {
-//	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, 0);		// 20MHz
- 	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, (CLKCTRL_PEN_bm | CLKCTRL_PDIV_2X_gc));		// 10MHz
-// 	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, (CLKCTRL_PEN_bm | CLKCTRL_PDIV_4X_gc));		// 5MHz
-// 	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, (CLKCTRL_PEN_bm | CLKCTRL_PDIV_6X_gc));		// 3.333..MHz
-// 	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, (CLKCTRL_PEN_bm | CLKCTRL_PDIV_48X_gc));		// 0.416..MHz
+	if(source == CLOCK_SOURCE_INTERNAL)
+	{
+		// 내부 20MHz 오실레이터 사용
+		_PROTECTED_WRITE(CLKCTRL.MCLKCTRLA, CLKCTRL_CLKSEL_OSC20M_gc);
+	}
+	else if(source == CLOCK_SOURCE_EXTERNAL)
+	{
+		// 외부 클럭/크리스털 사용
+		_PROTECTED_WRITE(CLKCTRL.MCLKCTRLA, CLKCTRL_CLKSEL_EXTCLK_gc);
+	}
 }
 
-uint32_t CLOCK_GetFrequency(void) {
-	return current_freq;
+void clock_set_prescaler(uint8_t div)
+{
+	// 분주기 설정 (예: 2, 4, 8 ...)
+	// CLKCTRL.MCLKCTRLB 레지스터 사용
+	switch(div)
+	{
+		case 2:
+		_PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, CLKCTRL_PDIV_2X_gc | CLKCTRL_PEN_bm);
+		break;
+		case 4:
+		_PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, CLKCTRL_PDIV_4X_gc | CLKCTRL_PEN_bm);
+		break;
+		case 8:
+		_PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, CLKCTRL_PDIV_8X_gc | CLKCTRL_PEN_bm);
+		break;
+		case 16:
+		_PROTECTED_WRITE(CLKCTRL.MCLKCTRLB, CLKCTRL_PDIV_16X_gc | CLKCTRL_PEN_bm);
+		break;
+		default:
+		// 기본값: 분주기 없음
+		_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, 0);
+		break;
+	}
+}
+
+clock_source_t clock_get_source(void)
+{
+	uint8_t sel = CLKCTRL.MCLKCTRLA & CLKCTRL_CLKSEL_gm;
+	if(sel == CLKCTRL_CLKSEL_OSC20M_gc)
+	{
+		return CLOCK_SOURCE_INTERNAL;
+	}
+	else
+	{
+		return CLOCK_SOURCE_EXTERNAL;
+	}
 }

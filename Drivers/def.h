@@ -9,10 +9,11 @@
 #ifndef DEF_H_
 #define DEF_H_
 
+#ifndef F_CPU
 #define F_CPU	20000000UL
+#endif
 
 #include <avr/io.h>
-#include <util/delay.h>
 #include <avr/interrupt.h>
 #include <stdbool.h>
 #include <stdint.h>

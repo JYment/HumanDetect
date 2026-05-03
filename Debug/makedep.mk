@@ -10,7 +10,13 @@ Drivers\gpio.c
 
 Drivers\i2c.c
 
+Drivers\power.c
+
+Drivers\timer.c
+
 Drivers\uart.c
+
+Drivers\wdt.c
 
 main.c
 
