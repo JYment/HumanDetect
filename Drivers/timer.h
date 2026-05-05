@@ -15,9 +15,9 @@ typedef struct {
 	bool is_open;
 } timer_instance_t;
 
-void TIMER_init(timer_instance_t *inst);
-void TIMER_open(timer_instance_t *inst);
-void TIMER_close(timer_instance_t *inst);
+void TIMER_init(void);
+void TIMER_open(void);
+void TIMER_close(void);
 
 
 #endif /* TIMER_H_ */

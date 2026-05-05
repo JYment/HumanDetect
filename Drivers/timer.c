@@ -7,20 +7,17 @@
 
 #include "timer.h"
 
-void TIMER_init(timer_instance_t *inst)
+void TIMER_init(void)
 {
 	TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV64_gc;
-	inst->is_open = false;
 }
 
-void TIMER_open(timer_instance_t *inst)
+void TIMER_open(void)
 {
 	TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
-	inst->is_open = true;
 }
 
-void TIMER_close(timer_instance_t *inst)
+void TIMER_close(void)
 {
 	TCA0.SINGLE.CTRLA &= ~TCA_SINGLE_ENABLE_bm;
-	inst->is_open = false;
 }
