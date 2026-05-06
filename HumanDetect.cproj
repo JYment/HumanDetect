@@ -182,6 +182,12 @@
     <Compile Include="Drivers\uart.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Drivers\vl53l0x.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\vl53l0x.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Drivers\wdt.c">
       <SubType>compile</SubType>
     </Compile>

@@ -45,6 +45,7 @@ C_SRCS +=  \
 ../Drivers/power.c \
 ../Drivers/timer.c \
 ../Drivers/uart.c \
+../Drivers/vl53l0x.c \
 ../Drivers/wdt.c \
 ../main.c
 
@@ -63,6 +64,7 @@ Drivers/i2c.o \
 Drivers/power.o \
 Drivers/timer.o \
 Drivers/uart.o \
+Drivers/vl53l0x.o \
 Drivers/wdt.o \
 main.o
 
@@ -74,6 +76,7 @@ Drivers/i2c.o \
 Drivers/power.o \
 Drivers/timer.o \
 Drivers/uart.o \
+Drivers/vl53l0x.o \
 Drivers/wdt.o \
 main.o
 
@@ -85,6 +88,7 @@ Drivers/i2c.d \
 Drivers/power.d \
 Drivers/timer.d \
 Drivers/uart.d \
+Drivers/vl53l0x.d \
 Drivers/wdt.d \
 main.d
 
@@ -96,6 +100,7 @@ Drivers/i2c.d \
 Drivers/power.d \
 Drivers/timer.d \
 Drivers/uart.d \
+Drivers/vl53l0x.d \
 Drivers/wdt.d \
 main.d
 
@@ -156,6 +161,13 @@ Drivers/timer.o: ../Drivers/timer.c
 	
 
 Drivers/uart.o: ../Drivers/uart.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.8.332\include" -I"../Drivers"  -Og -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=attiny814 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.8.332\gcc\dev\attiny814" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+Drivers/vl53l0x.o: ../Drivers/vl53l0x.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.8.332\include" -I"../Drivers"  -Og -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=attiny814 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.8.332\gcc\dev\attiny814" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

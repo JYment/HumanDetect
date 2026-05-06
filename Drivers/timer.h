@@ -15,9 +15,10 @@ typedef struct {
 	bool is_open;
 } timer_instance_t;
 
-void TIMER_init(void);
-void TIMER_open(void);
-void TIMER_close(void);
 
+bool TIMER_Open(uint32_t f_cpu, uint16_t prescaler, uint32_t target_freq);
+bool TIMER_OpenMillis(uint32_t f_cpu, uint16_t prescaler);
+void TIMER_Close(void);
+uint32_t millis(void);
 
 #endif /* TIMER_H_ */

@@ -27,7 +27,7 @@ void I2C_Open(uint32_t f_cpu, uint32_t scl_freq)
 	TWI0.MSTATUS = TWI_BUSSTATE_IDLE_gc;
 }
 
-bool I2C_Write(uint8_t slave_addr, const uint8_t *data, uint8_t length)
+bool I2C_WriteBytes(uint8_t slave_addr, const uint8_t *data, uint8_t length)
 {
 	while ((TWI0.MSTATUS & TWI_BUSSTATE_gm) == TWI_BUSSTATE_BUSY_gc);
 
@@ -54,7 +54,7 @@ bool I2C_Write(uint8_t slave_addr, const uint8_t *data, uint8_t length)
 	return true;
 }
 
-bool I2C_Read(uint8_t slave_addr, uint8_t *data, uint8_t length)
+bool I2C_ReadBytes(uint8_t slave_addr, uint8_t *data, uint8_t length)
 {
 	while ((TWI0.MSTATUS & TWI_BUSSTATE_gm) == TWI_BUSSTATE_BUSY_gc);
 
@@ -80,37 +80,89 @@ bool I2C_Read(uint8_t slave_addr, uint8_t *data, uint8_t length)
 	return true;
 }
 
-bool I2C_ReadReg(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len)
+
+
+bool I2C_ReadRegAddr8(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len)
 {
 	// START + SLA+W
 	TWI0.MADDR = (addr << 1) | 0;
 	while (!(TWI0.MSTATUS & TWI_WIF_bm));
 
+	TWI0.MDATA = (uint8_t)(reg & 0xFF);
+	while (!(TWI0.MSTATUS & TWI_WIF_bm));
+	
+	// REPEATED START + SLA+R
+	TWI0.MADDR = (addr << 1) | 1;
+	
+	for (uint8_t i = 0; i < len; i++)
+	{
+		// RIF 대기
+		while (!(TWI0.MSTATUS & TWI_RIF_bm));
+
+		if (i == len - 1)
+		{
+			TWI0.MCTRLB = TWI_ACKACT_NACK_gc | TWI_MCMD_STOP_gc;
+		}
+		else
+		{
+			TWI0.MCTRLB = TWI_MCMD_RECVTRANS_gc;
+		}
+		
+		data[i] = TWI0.MDATA; // ✅ ACK/NACK 설정 후 읽기
+	}
+
+	return true;
+}
+
+
+bool I2C_ReadRegAddr16(uint8_t addr, uint16_t reg, uint8_t *data, uint8_t len)
+{
+	// START + SLA+W
+	TWI0.MADDR = (addr << 1) | 0;
+	while (!(TWI0.MSTATUS & TWI_WIF_bm));
 	if (TWI0.MSTATUS & TWI_RXACK_bm)
 	{
 		TWI0.MCTRLB = TWI_MCMD_STOP_gc;
 		return false;
 	}
 
-	// register address
-	TWI0.MDATA = reg;
+	// 레지스터 주소 상위 바이트
+	TWI0.MDATA = (uint8_t)(reg >> 8);
 	while (!(TWI0.MSTATUS & TWI_WIF_bm));
+	if (TWI0.MSTATUS & TWI_RXACK_bm)
+	{
+		TWI0.MCTRLB = TWI_MCMD_STOP_gc;
+		return false;
+	}
 
-	// ⭐ REPEATED START (중요)
+	// 레지스터 주소 하위 바이트
+	TWI0.MDATA = (uint8_t)(reg & 0xFF);
+	while (!(TWI0.MSTATUS & TWI_WIF_bm));
+	if (TWI0.MSTATUS & TWI_RXACK_bm)
+	{
+		TWI0.MCTRLB = TWI_MCMD_STOP_gc;
+		return false;
+	}
+
+	// REPEATED START + SLA+R
 	TWI0.MADDR = (addr << 1) | 1;
-	while (!(TWI0.MSTATUS & TWI_RIF_bm));
 
 	for (uint8_t i = 0; i < len; i++)
 	{
-		data[i] = TWI0.MDATA;
-
-		if (i < len - 1)
-		TWI0.MCTRLB = TWI_MCMD_RECVTRANS_gc; // ACK
+		// RIF 대기
+		while (!(TWI0.MSTATUS & TWI_RIF_bm));
+		
+		if (i == len - 1)
+		{
+			TWI0.MCTRLB = TWI_ACKACT_NACK_gc | TWI_MCMD_STOP_gc;
+		}
 		else
-		TWI0.MCTRLB = TWI_ACKACT_NACK_gc | TWI_MCMD_STOP_gc; // NACK + STOP
+		{
+			TWI0.MCTRLB = TWI_MCMD_RECVTRANS_gc;
+		}
+		
+		data[i] = TWI0.MDATA; // MDATA 읽기가 ACK/NACK 전송 트리거
 	}
-	
-	_delay_ms(5);
 
 	return true;
 }

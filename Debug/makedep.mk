@@ -16,6 +16,8 @@ Drivers\timer.c
 
 Drivers\uart.c
 
+Drivers\vl53l0x.c
+
 Drivers\wdt.c
 
 main.c

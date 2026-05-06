@@ -16,7 +16,7 @@
 #include "gpio.h"
 #include "i2c.h"
 #include "uart.h"
-
+#include "vl53l0x.h"
 
 
 typedef enum {
