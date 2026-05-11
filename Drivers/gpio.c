@@ -47,9 +47,12 @@ void GPIO_Open(volatile PORT_t *port, uint8_t pin, gpio_dir_t dir, gpio_input_op
 			{
 				ctrl |= PORT_PULLUPEN_bm;
 			}
-			if (opt->ext_int) {
+			if (opt->ext_int) 
+			{
 				ctrl |= opt->isc_mode; // 사용자가 원하는 ISC 모드 지정
-				} else {
+			}
+			else
+			{
 				ctrl |= PORT_ISC_INPUT_DISABLE_gc;
 			}
 			*pinctrl = ctrl;

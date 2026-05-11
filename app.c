@@ -7,18 +7,26 @@
 #include "app.h"
 
 
+gpio_input_opt_t g_optPA4 = {
+	.pullup = false,
+	.ext_int = true,
+	.isc_mode = PORT_ISC_RISING_gc
+};
+
+
 app_state_t status;
 uint32_t millis_cnt;
 bool isOn;
 
 ISR(PORTA_PORT_vect)
 {
-	if (VPORTA.INTFLAGS & (1 << 2))
+	PORTA.INTFLAGS = PIN4_bm;
+	
+	if(GPIO_Read(&PORTA, 4)) 
 	{
-		VPORTA.INTFLAGS = (1 << 2); // 플래그 클리어
+		printf("PIR_ON\r\n");
 	}
 }
-
 
 
 void APP_Init(void)
@@ -32,6 +40,7 @@ void APP_Init(void)
 	
 
 	GPIO_Open(&PORTA, 1, GPIO_DIR_OUTPUT, NULL);
+	GPIO_Open(&PORTA, 4, GPIO_DIR_INPUT, &g_optPA4);
 	UART_Open(F_CPU, 9600); // F_CPU=10MHz, Baud=9600
 	I2C_Open(F_CPU, 100000ul);
 	TIMER_OpenMillis(F_CPU, 64);
@@ -73,6 +82,7 @@ void APP_Run(void)
 	}
 	
 	GPIO_Write(&PORTA, 1, isOn);
+	
 	
 	switch(status)
 	{
