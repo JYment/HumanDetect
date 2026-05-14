@@ -39,6 +39,7 @@ SUBDIRS :=  \
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../app.c \
+../Drivers/button.c \
 ../Drivers/clock.c \
 ../Drivers/DFPlayer.c \
 ../Drivers/gpio.c \
@@ -59,6 +60,7 @@ ASM_SRCS +=
 
 OBJS +=  \
 app.o \
+Drivers/button.o \
 Drivers/clock.o \
 Drivers/DFPlayer.o \
 Drivers/gpio.o \
@@ -72,6 +74,7 @@ main.o
 
 OBJS_AS_ARGS +=  \
 app.o \
+Drivers/button.o \
 Drivers/clock.o \
 Drivers/DFPlayer.o \
 Drivers/gpio.o \
@@ -85,6 +88,7 @@ main.o
 
 C_DEPS +=  \
 app.d \
+Drivers/button.d \
 Drivers/clock.d \
 Drivers/DFPlayer.d \
 Drivers/gpio.d \
@@ -98,6 +102,7 @@ main.d
 
 C_DEPS_AS_ARGS +=  \
 app.d \
+Drivers/button.d \
 Drivers/clock.d \
 Drivers/DFPlayer.d \
 Drivers/gpio.d \
@@ -124,6 +129,13 @@ LINKER_SCRIPT_DEP+=
 
 # AVR32/GNU C Compiler
 ./app.o: .././app.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../Drivers" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.10.348\include"  -Og -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=attiny416 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.10.348\gcc\dev\attiny416" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+Drivers/button.o: ../Drivers/button.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../Drivers" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.10.348\include"  -Og -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=attiny416 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATtiny_DFP\1.10.348\gcc\dev\attiny416" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

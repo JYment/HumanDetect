@@ -4,6 +4,8 @@
 
 app.c
 
+Drivers\button.c
+
 Drivers\clock.c
 
 Drivers\DFPlayer.c

@@ -61,10 +61,9 @@ ISR(PORTA_PORT_vect)
 	
 	if(GPIO_Read(&PORTC, 3))
 	{
-		isOn_PC3
+		isOn_PC3 = true;
 		
-		
-		
+			
 		PORTC.INTFLAGS = PIN3_bm;		
 	}	
 }
@@ -108,9 +107,14 @@ void APP_Init(void)
 
 void APP_Run(void)
 {
-	GPIO_Write(&PORTC, 1, isOn);
-	GPIO_Write(&PORTC, 0, isOn);
-
+	uint8_t resp[10];
+	uint8_t cmd = DF_ReadResponse(resp);
+	if(cmd == 0x3D)
+	{
+		uint16_t track = (resp[5] << 8) | resp[6];
+		DF_Next();
+	}
+	
 	if(millis() - millis_cnt > 5000)
 	{
 		millis_cnt = millis();

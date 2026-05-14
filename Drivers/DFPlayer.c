@@ -61,3 +61,20 @@ void DF_SetVolume(uint8_t volume)
 	if (volume > 30) volume = 30; // DFPlayer 최대 볼륨 30
 	DF_SendCommand(0x06, volume);
 }
+
+uint8_t DF_ReadByte(void)
+{
+	return UART_ReadChar();
+}
+
+// 응답 패킷 파싱 예시
+uint8_t DF_ReadResponse(uint8_t *buffer)
+{
+	// 패킷은 10바이트 고정
+	for (int i = 0; i < 10; i++) {
+		buffer[i] = DF_ReadByte();
+	}
+
+	// 간단히 CMD 코드 반환 (buffer[3]이 명령/이벤트 코드)
+	return buffer[3];
+}

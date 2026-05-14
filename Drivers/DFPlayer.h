@@ -20,5 +20,6 @@ void DF_Stop(void);
 void DF_Next(void);
 void DF_Prev(void);
 void DF_SetVolume(uint8_t volume);
-
+uint8_t DF_ReadByte(void);
+uint8_t DF_ReadResponse(uint8_t *buffer);
 #endif /* DFPLAYER_H_ */
