@@ -6,6 +6,8 @@ app.c
 
 Drivers\clock.c
 
+Drivers\DFPlayer.c
+
 Drivers\gpio.c
 
 Drivers\i2c.c

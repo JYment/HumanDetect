@@ -17,6 +17,7 @@
 #include "i2c.h"
 #include "uart.h"
 #include "vl53l0x.h"
+#include "DFPlayer.h"
 
 
 typedef enum {
