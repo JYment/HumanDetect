@@ -18,7 +18,7 @@ static void DF_SendCommand(uint8_t cmd, uint16_t param)
 	packet[1] = 0xFF;
 	packet[2] = 0x06;
 	packet[3] = cmd;
-	packet[4] = 0x00;
+	packet[4] = 0x01;
 	packet[5] = (param >> 8) & 0xFF;
 	packet[6] = param & 0xFF;
 
