@@ -18,13 +18,14 @@ uint16_t distanceArr[30];
 uint8_t distanceCnt;
 uint32_t distacneTotal;
 bool isOn_PA5;
-
+bool isOn_Led;
 
 ISR(PORTA_PORT_vect)
 {	
 	if(GPIO_Read(&PORTA, 5)) 
 	{
 		isOn_PA5 = true;
+		isOn_Led = true;
 		PORTA.INTFLAGS = PIN5_bm;
 	}
 }
@@ -41,7 +42,7 @@ void APP_Init(void)
 	GPIO_Open(&PORTA, 2, GPIO_DIR_OUTPUT, NULL);			// Power 5V Enable
 	GPIO_Open(&PORTC, 1, GPIO_DIR_OUTPUT, NULL);			// LED
 	GPIO_Open(&PORTC, 0, GPIO_DIR_OUTPUT, NULL);			// LED
-	GPIO_Open(&PORTA, 5, GPIO_DIR_INPUT, &g_optPA5);	// SR501_R
+	GPIO_Open(&PORTA, 5, GPIO_DIR_INPUT, NULL);			// SR501_L
 	UART_Open(F_CPU, 9600);								// F_CPU=10MHz, Baud=9600
 	
 	I2C_Open(F_CPU, 100000ul);
@@ -73,6 +74,19 @@ void APP_Run(void)
 //		DF_Play(1);
 //	}
 	
+	GPIO_Write(&PORTC, 0, isOn_PA5);
+	GPIO_Write(&PORTC, 1, isOn_PA5);
+	
+	if(GPIO_Read(&PORTA, 5) == true)
+	{
+		isOn_PA5 = true;
+	}
+	else
+	{
+		isOn_PA5 = false;
+	}
+	
+	
 	if(millis() - millis_cnt > 100)
 	{
 		millis_cnt = millis();
@@ -80,7 +94,7 @@ void APP_Run(void)
 
 		if(isOn_PA5 == true)
 		{
-			if(distance > 20)
+			if(distance > 25)
 			{
 				distanceArr[distanceCnt] = distance;
 				distacneTotal += distance;
@@ -89,16 +103,18 @@ void APP_Run(void)
 		}
 	}	
 
-	if(distanceCnt == 10)
+	
+
+
+	if(distanceCnt == 20)
 	{
 		distacneTotal /= distanceCnt;
 		distanceCnt = 0;
 		if(distacneTotal <= 1000)
 		{
-			DF_Next();
+			DF_Play(1);
+			
 		}
-
-		isOn_PA5 = false;
 	}
 	
 	switch(status)
