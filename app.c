@@ -6,10 +6,10 @@
  */ 
 #include "app.h"
 
-gpio_input_opt_t g_optPA5 = {
+gpio_input_opt_t g_optPA1 = {
 	.pullup = false,
-	.ext_int = true,
-	.isc_mode = PORT_ISC_RISING_gc
+	.ext_int = false,
+	.isc_mode = PORT_ISC_INTDISABLE_gc
 };
 
 app_state_t status;
@@ -18,14 +18,12 @@ uint16_t distanceArr[30];
 uint8_t distanceCnt;
 uint32_t distacneTotal;
 bool isOn_PA5;
-bool isOn_Led;
 
 ISR(PORTA_PORT_vect)
 {	
 	if(GPIO_Read(&PORTA, 5)) 
 	{
-		isOn_PA5 = true;
-		isOn_Led = true;
+//		isOn_PA5 = true;
 		PORTA.INTFLAGS = PIN5_bm;
 	}
 }
@@ -40,15 +38,15 @@ void APP_Init(void)
 	UART_Init();
 	
 	GPIO_Open(&PORTA, 2, GPIO_DIR_OUTPUT, NULL);			// Power 5V Enable
-	GPIO_Open(&PORTC, 1, GPIO_DIR_OUTPUT, NULL);			// LED
 	GPIO_Open(&PORTC, 0, GPIO_DIR_OUTPUT, NULL);			// LED
-	GPIO_Open(&PORTA, 5, GPIO_DIR_INPUT, NULL);			// SR501_L
+	GPIO_Open(&PORTA, 5, GPIO_DIR_INPUT, NULL);				// SR501_L
+	GPIO_Open(&PORTA, 1, GPIO_DIR_INPUT, NULL);
 	UART_Open(F_CPU, 9600);								// F_CPU=10MHz, Baud=9600
 	
 	I2C_Open(F_CPU, 100000ul);
 	TIMER_OpenMillis(F_CPU, 64);
 	GPIO_Write(&PORTA, 2, true);
-			
+				
 	sei();
 
 	if (!VL53_Init())
@@ -57,7 +55,6 @@ void APP_Init(void)
 	}
 	
 	_delay_ms(2000);
-	 
 	DF_SetVolume(30);
 	
 	millis_cnt = millis();
@@ -67,25 +64,10 @@ void APP_Init(void)
 
 void APP_Run(void)
 {
-//	uint8_t resp[10];
-//	uint8_t cmd = DF_ReadResponse(resp);
-//	if(cmd == 0x3D)
-//	{
-//		DF_Play(1);
-//	}
-	
-	GPIO_Write(&PORTC, 0, isOn_PA5);
-	GPIO_Write(&PORTC, 1, isOn_PA5);
-	
-	if(GPIO_Read(&PORTA, 5) == true)
-	{
-		isOn_PA5 = true;
-	}
-	else
-	{
-		isOn_PA5 = false;
-	}
-	
+	uint16_t avgDistance;
+
+	GPIO_Write(&PORTC, 0, isOn_PA5);	
+	isOn_PA5 = GPIO_Read(&PORTA, 5);
 	
 	if(millis() - millis_cnt > 100)
 	{
@@ -103,18 +85,18 @@ void APP_Run(void)
 		}
 	}	
 
-	
-
-
 	if(distanceCnt == 20)
 	{
-		distacneTotal /= distanceCnt;
+		avgDistance = distacneTotal / distanceCnt;
+		distacneTotal = 0;
 		distanceCnt = 0;
-		if(distacneTotal <= 1000)
+		if(avgDistance <= 1000)
 		{
 			DF_Play(1);
-			
+			_delay_ms(6000);
 		}
+		for(uint8_t i=0; i<20; i++)
+			distanceArr[i] = 0;
 	}
 	
 	switch(status)
